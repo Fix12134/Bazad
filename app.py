@@ -1,27 +1,21 @@
 from flask import Flask, render_template, url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-from app import db
+import sqlite3 as _sqlite3
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
-db = SQLAlchemy(app)
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(80), nullable=False)
-    date = db.Column(db.DateTime, default=datetime.utcnow)
-    def __init__(self,id,  username, email, password, date):
-        self.id = id
-        self.username = username
-        self.email = email
-        self.password = password
-        self.date = date
 
-    with app.app_context():
-        db.create_all()
+with sql.connect("base.db") as con:
+    cur = con.cursor()
+
+    cur.execute("""CREATE TABLE IF NOT EXISTS users(
+    user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        login_name TEXT NOT NULL UNIQUE,
+        password TEXT NOT NULL,
+        email TEXT NOT NULL UNIQUE,
+        registration_date DATE DEFAULT CURRENT_DATE
+        )""")
 
 @app.route('/')
 @app.route('/home')
